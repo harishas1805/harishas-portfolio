@@ -55,6 +55,35 @@ async function deploy() {
             console.log(`Database has ${count} projects. Skipping Seed.`);
         }
 
+        // 4. Auto-Cleanup Visibility (Enforce rules)
+        console.log('🧹 Cleaning up visibility flags...');
+        const cleanupTables = ['projects', 'internships', 'achievements'];
+        const cleanupLinks = [
+            { link: 'source_code_link', visible: 'source_code_visible' },
+            { link: 'demo_video_link', visible: 'demo_video_visible' },
+            { link: 'live_demo_link', visible: 'live_demo_visible' },
+            { link: 'certificate_link', visible: 'certificate_visible' }
+        ];
+
+        for (const table of cleanupTables) {
+            for (const pair of cleanupLinks) {
+                // Set visible = FALSE where link is NULL or empty
+                await db.query(`
+                    UPDATE ${table} 
+                    SET ${pair.visible} = FALSE 
+                    WHERE ${pair.link} IS NULL OR TRIM(${pair.link}) = ''
+                `);
+            }
+        }
+
+        // Certifications Cleanup
+        await db.query(`
+            UPDATE certifications 
+            SET certificate_visible = FALSE 
+            WHERE certificate_image_path IS NULL OR TRIM(certificate_image_path) = ''
+        `);
+        console.log('✨ Visibility flags optimized.');
+
         console.log('✅ Deployment DB Check Complete.');
         process.exit(0);
 
