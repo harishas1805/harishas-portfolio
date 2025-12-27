@@ -25,7 +25,7 @@ updateThemeIcon();
 themeToggle.addEventListener('click', () => {
     const currentTheme = html.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     html.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     updateThemeIcon();
@@ -92,7 +92,7 @@ navLinks.forEach(link => {
         e.preventDefault();
         const targetId = link.getAttribute('href');
         const targetSection = document.querySelector(targetId);
-        
+
         if (targetSection) {
             const offsetTop = targetSection.offsetTop - 70;
             window.scrollTo({
@@ -124,7 +124,7 @@ const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         // Get form values
         const formData = {
             name: document.getElementById('name').value,
@@ -132,11 +132,11 @@ if (contactForm) {
             subject: document.getElementById('subject').value,
             message: document.getElementById('message').value
         };
-        
+
         // Here you would typically send the data to a backend service
         // For now, we'll just show a success message
         showNotification('Message sent successfully! I will get back to you soon.', 'success');
-        
+
         // Reset form
         contactForm.reset();
     });
@@ -155,7 +155,7 @@ function showNotification(message, type = 'success') {
             <span>${message}</span>
         </div>
     `;
-    
+
     // Add styles
     notification.style.cssText = `
         position: fixed;
@@ -170,18 +170,18 @@ function showNotification(message, type = 'success') {
         animation: slideInRight 0.3s ease;
         max-width: 400px;
     `;
-    
+
     notification.querySelector('.notification-content').style.cssText = `
         display: flex;
         align-items: center;
         gap: 0.75rem;
     `;
-    
+
     notification.querySelector('i').style.fontSize = '1.25rem';
-    
+
     // Add to body
     document.body.appendChild(notification);
-    
+
     // Remove after 5 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOutRight 0.3s ease';
@@ -235,7 +235,7 @@ function createScrollProgressBar() {
         width: 0%;
     `;
     document.body.appendChild(progressBar);
-    
+
     window.addEventListener('scroll', () => {
         const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = (window.scrollY / windowHeight) * 100;
@@ -251,14 +251,14 @@ createScrollProgressBar();
 function createTypingEffect() {
     const heroDescription = document.querySelector('.hero-description');
     if (!heroDescription) return;
-    
+
     const text = heroDescription.textContent;
     heroDescription.textContent = '';
     heroDescription.style.opacity = '1';
-    
+
     let index = 0;
     const speed = 30;
-    
+
     function type() {
         if (index < text.length) {
             heroDescription.textContent += text.charAt(index);
@@ -266,7 +266,7 @@ function createTypingEffect() {
             setTimeout(type, speed);
         }
     }
-    
+
     // Start typing after a small delay
     setTimeout(type, 1000);
 }
@@ -285,7 +285,7 @@ function createCursorTrail() {
         'hsla(280, 75%, 58%, 0.3)',
         'hsla(335, 85%, 58%, 0.3)'
     ];
-    
+
     // Create circle elements
     for (let i = 0; i < 20; i++) {
         const circle = document.createElement('div');
@@ -302,31 +302,31 @@ function createCursorTrail() {
         document.body.appendChild(circle);
         circles.push(circle);
     }
-    
+
     // Update coordinates on mouse move
     window.addEventListener('mousemove', (e) => {
         coords.x = e.clientX;
         coords.y = e.clientY;
     });
-    
+
     // Animate circles
     function animateCircles() {
         let x = coords.x;
         let y = coords.y;
-        
+
         circles.forEach((circle, index) => {
             circle.style.left = x - 5 + 'px';
             circle.style.top = y - 5 + 'px';
             circle.style.transform = `scale(${(circles.length - index) / circles.length})`;
-            
+
             const nextCircle = circles[index + 1] || circles[0];
             x += (parseInt(nextCircle.style.left) || coords.x - 5 - x) * 0.3;
             y += (parseInt(nextCircle.style.top) || coords.y - 5 - y) * 0.3;
         });
-        
+
         requestAnimationFrame(animateCircles);
     }
-    
+
     animateCircles();
 }
 
@@ -371,7 +371,7 @@ if ('IntersectionObserver' in window) {
             }
         });
     });
-    
+
     document.querySelectorAll('img[data-src]').forEach(img => {
         imageObserver.observe(img);
     });
@@ -424,3 +424,117 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'YOUR-GA-ID');
 */
+
+// ===================================
+// Certificate/Achievement Modal
+// ===================================
+const certificateModal = document.getElementById('certificateModal');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalClose = document.getElementById('modalClose');
+const modalImage = document.getElementById('modalImage');
+const modalTitle = document.getElementById('modalTitle');
+const modalIssuer = document.getElementById('modalIssuer');
+const modalDate = document.getElementById('modalDate');
+const modalDescription = document.getElementById('modalDescription');
+
+// Get all "View Certificate" buttons
+const viewCertButtons = document.querySelectorAll('.view-cert-btn');
+
+// Function to open modal
+function openModal(data) {
+    certificateModal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+    // Populate modal with data
+    modalTitle.textContent = data.title;
+    modalIssuer.textContent = data.issuer || '';
+    modalDate.textContent = data.date || '';
+    modalDescription.textContent = data.description || '';
+
+    // Set image if available, otherwise hide it
+    if (data.image) {
+        modalImage.src = data.image;
+        modalImage.alt = data.title;
+        modalImage.style.display = 'block';
+    } else {
+        modalImage.style.display = 'none';
+    }
+}
+
+// Function to close modal
+function closeModal() {
+    certificateModal.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+    modalImage.src = '';
+}
+
+// Add click event to all "View Certificate" buttons
+viewCertButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+
+        // Find the parent card
+        const card = button.closest('.cert-card, .achievement-card, .timeline-content');
+
+        if (!card) return;
+
+        // Extract data from the card
+        let title, issuer, date, description, image;
+
+        if (card.classList.contains('cert-card')) {
+            // Certificate card
+            title = card.querySelector('h4')?.textContent || '';
+            issuer = card.querySelector('.cert-issuer')?.textContent || '';
+            date = card.querySelector('.cert-date')?.textContent || '';
+            description = `Certificate awarded for completing ${title}`;
+            image = card.getAttribute('data-certificate-image') || null;
+        } else if (card.classList.contains('achievement-card')) {
+            // Achievement/Hackathon card
+            title = card.querySelector('h3')?.textContent || '';
+            issuer = card.querySelector('.achievement-position')?.textContent || '';
+            date = '';
+            description = card.querySelector('.achievement-description')?.textContent || '';
+            image = card.getAttribute('data-certificate-image') || null;
+        } else if (card.classList.contains('timeline-content')) {
+            // Internship timeline item
+            title = card.querySelector('h4')?.textContent || '';
+            issuer = card.querySelector('.timeline-company')?.textContent || '';
+            date = card.querySelector('.timeline-date')?.textContent || '';
+
+            // Get description from timeline points
+            const points = card.querySelectorAll('.timeline-points li');
+            description = Array.from(points).map(li => '• ' + li.textContent).join('\n');
+
+            image = card.closest('.timeline-item')?.getAttribute('data-certificate-image') || null;
+        }
+
+        openModal({
+            title,
+            issuer,
+            date,
+            description,
+            image
+        });
+    });
+});
+
+// Close modal on close button click
+modalClose.addEventListener('click', closeModal);
+
+// Close modal on overlay click
+modalOverlay.addEventListener('click', closeModal);
+
+// Close modal on Escape key press
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && certificateModal.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Prevent modal content clicks from closing the modal
+document.querySelector('.modal-container').addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+
+console.log('%c✨ Modal System Ready!', 'color: #10b981; font-size: 14px; font-weight: bold;');
+console.log('%c📜 Click "View Certificate" buttons to see certificate details', 'color: #6366f1; font-size: 12px;');
