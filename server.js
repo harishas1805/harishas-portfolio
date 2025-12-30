@@ -439,6 +439,59 @@ app.post('/api/admin/upload', upload.single('file'), (req, res) => {
     res.json({ filePath: dataURI });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+// ================= DATABASE AUTO-MIGRATION =================
+async function ensureSchema() {
+    try {
+        console.log('🔄 Checking Database Schema...');
+
+        // 1. Create Messages Table
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS messages (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255),
+                email VARCHAR(255),
+                subject VARCHAR(255),
+                message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                is_read BOOLEAN DEFAULT FALSE
+            )
+        `);
+
+        // 2. Ensure Columns Exist (Safe Alter)
+        const tables = ['projects', 'internships', 'achievements'];
+        const links = ['source_code', 'demo_video', 'live_demo'];
+
+        // Add Visible Columns
+        for (const table of tables) {
+            for (const link of links) {
+                const colName = `${link}_visible`;
+                await db.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS ${colName} BOOLEAN DEFAULT TRUE`);
+            }
+            // Add Certificate Link
+            await db.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS certificate_link TEXT`);
+            // Add Certificate Visible
+            await db.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS certificate_visible BOOLEAN DEFAULT TRUE`);
+        }
+
+        // Certifications Table
+        await db.query(`ALTER TABLE certifications ADD COLUMN IF NOT EXISTS certificate_visible BOOLEAN DEFAULT TRUE`);
+        await db.query(`ALTER TABLE certifications ADD COLUMN IF NOT EXISTS verify_link VARCHAR(500)`);
+
+        // Projects Image
+        await db.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_image_path TEXT`);
+
+        // Skills Icon
+        await db.query(`ALTER TABLE skills ADD COLUMN IF NOT EXISTS icon_class VARCHAR(50) DEFAULT 'fas fa-code'`);
+
+        console.log('✅ Database Schema Verified.');
+    } catch (err) {
+        console.error('❌ Schema Check Failed:', err);
+    }
+}
+
+// Start Server
+ensureSchema().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
 });
