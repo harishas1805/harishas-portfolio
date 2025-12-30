@@ -42,7 +42,13 @@ async function deploy() {
         // Project Home Page Image
         await db.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_image_path VARCHAR(500)`);
 
-        // 3. Seeding (Only if empty)
+        // ==========================================
+        // FORCE UPDATE SKILLS (User Requirement)
+        // ==========================================
+        const { seedSkills } = require('./seed');
+        await seedSkills();
+
+        // 3. Seeding (Only if empty for other tables)
         console.log('Checking if seeding needed...');
         // Check projects table as indicator
         const res = await db.query('SELECT COUNT(*) FROM projects');
@@ -51,11 +57,12 @@ async function deploy() {
         if (count === 0) {
             console.log('Table empty. Running Seed...');
             try {
+                // Since seedSkills is already run, we can run the rest via seed.js or keep using execSync
+                // But seed.js now has logic to avoid dupes if count is > 0, so safe to run.
                 execSync('node seed.js', { stdio: 'inherit' });
                 console.log('Seeding process finished.');
             } catch (seedErr) {
                 console.error('Seeding failed:', seedErr);
-                // Don't fail deployment just because seed failed (e.g. partial data)
             }
         } else {
             console.log(`Database has ${count} projects. Skipping Seed.`);
