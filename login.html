@@ -66,6 +66,19 @@
 
         <!-- Google Login Button Container -->
         <div id="googleBtnContainer">Loading Login...</div>
+
+        <!-- Fallback Login -->
+        <div style="margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+            <p style="margin-bottom: 1rem; font-size: 0.85rem;">Or verify with password:</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <input type="password" id="adminPass" placeholder="Admin Password"
+                    style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                <button onclick="manualLogin()"
+                    style="padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                    Verify
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -125,6 +138,33 @@
             } catch (err) {
                 console.error(err);
                 errorMsg.innerText = "Connection Error to Server";
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        async function manualLogin() {
+            const password = document.getElementById('adminPass').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.setItem('adminKey', data.token);
+                    window.location.href = 'admin.html';
+                } else {
+                    errorMsg.innerText = "Invalid Password";
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                errorMsg.innerText = "Connection Error";
                 errorMsg.style.display = 'block';
             }
         }

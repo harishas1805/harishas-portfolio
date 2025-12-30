@@ -228,8 +228,6 @@ app.post('/api/auth/google', async (req, res) => {
         console.log(`Google Auth Attempt: ${email}`);
 
         if (allowedEmails.includes(email)) {
-            // SUCCESS: Return the internal ADMIN_PASSWORD to the client to store as their "session key"
-            // This allows existing admin.js logic to work unchanged.
             res.json({ success: true, token: ADMIN_PASSWORD });
         } else {
             res.status(403).json({ success: false, error: 'Access Denied: Email not authorized' });
@@ -237,6 +235,16 @@ app.post('/api/auth/google', async (req, res) => {
     } catch (error) {
         console.error('Google Auth Error:', error);
         res.status(401).json({ success: false, error: 'Invalid Google Token' });
+    }
+});
+
+// Dev/Emergency Login Endpoint
+app.post('/api/auth/login', (req, res) => {
+    const { password } = req.body;
+    if (password === ADMIN_PASSWORD) {
+        res.json({ success: true, token: ADMIN_PASSWORD });
+    } else {
+        res.status(401).json({ success: false, error: 'Invalid Password' });
     }
 });
 
