@@ -71,7 +71,10 @@ function setupCertModal() {
         const ext = path.split('.').pop().toLowerCase();
 
         let content;
-        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+        // Check if path is an image (Base64 or File Extension)
+        const isImage = path.startsWith('data:image') || ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+
+        if (isImage) {
             content = `<img src="${path}" style="max-width:100%; max-height:70vh;border-radius:5px;">`;
         } else {
             content = `<iframe src="${path}" style="width:80vw; height:70vh; border:none; background:white;"></iframe>`;
