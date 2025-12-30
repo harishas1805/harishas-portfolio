@@ -1056,12 +1056,14 @@ section {
 /* Certifications */
 .certifications-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    /* Reduced min-width to allow 5 items to fit on standard desktops */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 0.75rem;
 }
 
 .cert-card {
-    padding: 1rem;
+    padding: 0.75rem;
+    /* Reduced padding */
     background: var(--bg-secondary);
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
@@ -1069,14 +1071,16 @@ section {
 }
 
 .cert-card:hover {
-    transform: translateX(10px);
+    transform: translateX(0) translateY(-5px);
+    /* Changed from X to Y for grid card feel */
     border-color: var(--primary-color);
     box-shadow: var(--shadow-md);
 }
 
 .cert-icon {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    /* Reduced size */
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1087,11 +1091,13 @@ section {
 
 .cert-icon i {
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    /* Reduced font size */
 }
 
 .cert-card h4 {
-    font-size: 1.125rem;
+    font-size: 1rem;
+    /* Reduced font size */
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
@@ -1099,22 +1105,25 @@ section {
 .cert-issuer {
     color: var(--primary-color);
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    /* Reduced font size */
     margin-bottom: 0.25rem;
 }
 
 .cert-date {
     color: var(--text-tertiary);
-    font-size: 0.875rem;
+    font-size: 0.8rem;
+    /* Reduced font size */
     margin-bottom: 0.5rem;
 }
 
 .cert-description {
     color: var(--text-secondary);
     font-size: 0.8rem;
-    line-height: 1.5;
-    margin-bottom: 0.75rem;
-    padding-bottom: 3rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+    padding-bottom: 2.5rem;
+    /* Reduced vertical space */
 }
 
 .cert-ongoing {
