@@ -241,6 +241,29 @@ app.post('/api/auth/google', async (req, res) => {
 // Protect all /api/admin/* routes
 app.use('/api/admin', authMiddleware);
 
+// Backup Endpoint - Exports all data
+app.get('/api/admin/backup', async (req, res) => {
+    try {
+        const tables = ['skills', 'projects', 'internships', 'certifications', 'achievements', 'messages'];
+        const backupData = {};
+
+        for (const table of tables) {
+            const result = await db.query(`SELECT * FROM ${table}`);
+            backupData[table] = result.rows;
+        }
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `portfolio_backup_${timestamp}.json`;
+
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+        res.json(backupData);
+    } catch (err) {
+        console.error('Backup Error:', err);
+        res.status(500).json({ error: 'Failed to create backup' });
+    }
+});
+
 // Generic Save Endpoint
 app.post('/api/admin/save', async (req, res) => {
     const { table, id, ...data } = req.body;
