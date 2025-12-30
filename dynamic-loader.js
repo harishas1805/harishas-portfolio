@@ -252,10 +252,13 @@ async function loadCertifications() {
                 <p class="cert-date">${cert.date_issued || cert.date}</p>
                 <p class="cert-description">${cert.description}</p>
                 <div class="card-actions">
-                    ${cert.certificate_visible !== false ? `
-                    <button onclick="openCertModal('${cert.certificate_image_path || '#'}' )" class="icon-badge view-cert-btn">
+                    ${(cert.certificate_image_path && cert.certificate_visible !== false) ? `
+                    <button onclick="openCertModal('${cert.certificate_image_path}')" class="icon-badge view-cert-btn">
                         <i class="fas fa-certificate"></i> View Certificate
-                    </button>` : ''}
+                    </button>` : `
+                    <span class="cert-ongoing">
+                        <i class="fas fa-user-clock"></i> Currently undergoing this course
+                    </span>`}
                 </div>
             </div>
         `).join('');
