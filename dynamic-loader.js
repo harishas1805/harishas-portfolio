@@ -130,7 +130,7 @@ async function loadProjects() {
             const clickAttr = hasPopup ? `onclick="openProjectModal('${project.project_image_path}')"` : '';
 
             return `
-            <div class="project-card ${project.is_featured ? 'featured' : ''}" data-aos="fade-up" data-aos-delay="${index * 100}" 
+            <div class="project-card" data-aos="fade-up" data-aos-delay="${index * 100}" 
                  style="${cursorStyle}" ${clickAttr}>
                 <div class="project-icon">
                     <i class="${project.icon_class || 'fas fa-laptop-code'}"></i>

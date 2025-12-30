@@ -789,10 +789,7 @@ section {
     box-shadow: var(--shadow-xl);
 }
 
-.project-card.featured {
-    grid-column: span 2;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-}
+
 
 .project-badge {
     position: absolute;
