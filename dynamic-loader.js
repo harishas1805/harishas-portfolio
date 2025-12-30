@@ -143,6 +143,7 @@ async function loadProjects() {
                 <div class="project-tech">
                     ${project.technologies.split(',').map(tech => `<span class="tech-tag">${tech.trim()}</span>`).join('')}
                 </div>
+                <br>
                 <div class="project-links icon-badge-wrapper" onclick="event.stopPropagation()">
                     ${project.source_code_link && project.source_code_visible !== false ? `
                     <a href="${project.source_code_link}" target="_blank" class="project-link icon-badge" data-type="github">
