@@ -12,6 +12,12 @@ function getAuthHeaders() {
     };
 }
 
+// Logout Function
+function logout() {
+    localStorage.removeItem('adminKey');
+    window.location.href = 'login.html';
+}
+
 // State
 let currentSection = 'skills';
 let editItemId = null;
