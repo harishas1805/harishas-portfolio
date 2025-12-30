@@ -264,6 +264,33 @@ app.get('/api/admin/backup', async (req, res) => {
     }
 });
 
+// View Endpoint (GET data for admin)
+app.get('/api/admin/view/:table', async (req, res) => {
+    const { table } = req.params;
+    const allowedTables = ['skills', 'projects', 'internships', 'certifications', 'achievements', 'messages'];
+    if (!allowedTables.includes(table)) {
+        return res.status(400).json({ error: 'Invalid table name' });
+    }
+
+    try {
+        let query = `SELECT * FROM ${table} ORDER BY id ASC`;
+        // For ordered tables, respect display_order
+        if (['skills', 'projects', 'internships', 'certifications', 'achievements'].includes(table)) {
+            query = `SELECT * FROM ${table} ORDER BY display_order ASC`;
+        }
+        // Messages order by date
+        if (table === 'messages') {
+            query = `SELECT * FROM messages ORDER BY created_at DESC`;
+        }
+
+        const result = await db.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
 // Generic Save Endpoint
 app.post('/api/admin/save', async (req, res) => {
     const { table, id, ...data } = req.body;
