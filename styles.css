@@ -766,6 +766,10 @@ section {
     transition: all var(--transition-base);
     position: relative;
     overflow: hidden;
+    /* Flex Layout for uniform height */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .project-card::before {
@@ -830,6 +834,8 @@ section {
     color: var(--text-secondary);
     line-height: 1.8;
     margin-bottom: var(--spacing-md);
+    flex-grow: 1;
+    /* Pushes content down */
 }
 
 .project-tech {
