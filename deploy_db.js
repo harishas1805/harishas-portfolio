@@ -49,6 +49,12 @@ async function deploy() {
         // Upgrade Certificate Image Path to TEXT for Base64 support
         await db.query(`ALTER TABLE certifications ALTER COLUMN certificate_image_path TYPE TEXT`);
 
+        // FIX: Upgrade certificate_link to TEXT in all relevant tables to support Base64 images
+        const certTables = ['projects', 'internships', 'achievements'];
+        for (const table of certTables) {
+            await db.query(`ALTER TABLE ${table} ALTER COLUMN certificate_link TYPE TEXT`);
+        }
+
         // ==========================================
         // FORCE UPDATE SKILLS (User Requirement)
         // ==========================================
