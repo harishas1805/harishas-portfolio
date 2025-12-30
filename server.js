@@ -178,6 +178,32 @@ app.get('/api/stats', async (req, res) => {
 });
 
 // ================= ADMIN ROUTES =================
+
+// Middleware for Admin Security
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+
+const authMiddleware = (req, res, next) => {
+    const password = req.headers['x-admin-password'];
+    if (password === ADMIN_PASSWORD) {
+        next();
+    } else {
+        res.status(401).json({ error: 'Unauthorized: Invalid Admin Password' });
+    }
+};
+
+// Verify Password Endpoint (for Login Page)
+app.post('/api/verify-password', (req, res) => {
+    const { password } = req.body;
+    if (password === ADMIN_PASSWORD) {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, error: 'Invalid Password' });
+    }
+});
+
+// Protect all /api/admin/* routes
+app.use('/api/admin', authMiddleware);
+
 // Generic Save Endpoint
 app.post('/api/admin/save', async (req, res) => {
     const { table, id, ...data } = req.body;

@@ -1,5 +1,17 @@
 const API_URL = '/api';
 
+// --- AUTH CHECK ---
+const ADMIN_KEY = localStorage.getItem('adminKey');
+if (!ADMIN_KEY) {
+    window.location.href = 'login.html';
+}
+
+function getAuthHeaders() {
+    return {
+        'x-admin-password': ADMIN_KEY
+    };
+}
+
 // State
 let currentSection = 'skills';
 let editItemId = null;
@@ -19,8 +31,18 @@ window.handleFileUpload = async (input, targetId) => {
     input.disabled = true;
 
     try {
-        const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+        const res = await fetch('/api/admin/upload', {
+            method: 'POST',
+            headers: getAuthHeaders(), // No Content-Type for FormData
+            body: formData
+        });
         const data = await res.json();
+
+        if (res.status === 401) {
+            alert('Session expired. Please login again.');
+            window.location.href = 'login.html';
+            return;
+        }
 
         if (data.error) throw new Error(data.error);
 
@@ -71,7 +93,14 @@ async function fetchData(section) {
     if (section === 'messages') {
         container.innerHTML = 'Loading messages...';
         try {
-            const response = await fetch('/api/admin/messages');
+            const response = await fetch('/api/admin/messages', {
+                headers: getAuthHeaders()
+            });
+
+            if (response.status === 401) {
+                window.location.href = 'login.html'; return;
+            }
+
             const messages = await response.json();
 
             if (messages.length === 0) {
@@ -116,7 +145,7 @@ async function fetchData(section) {
                 <div>
                     <strong><i class="fas fa-grip-vertical" style="color:#ccc; margin-right:10px"></i> ${item.title}</strong>
                     <br>
-                    <small>Order: ${item.display_order}</small> | 
+                    <small>Order: ${item.display_order}</small> |
                     <small style="color:${item.is_visible ? 'green' : 'red'}">Visible: ${item.is_visible ? '1' : '0'}</small>
                 </div>
                 <div>
@@ -139,7 +168,10 @@ async function fetchData(section) {
                 try {
                     const res = await fetch('/api/admin/reorder', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...getAuthHeaders()
+                        },
                         body: JSON.stringify({
                             table: section,
                             orderedIds: orderedIds
@@ -155,6 +187,8 @@ async function fetchData(section) {
                                 orderSmall.innerText = `Order: ${index + 1}`;
                             }
                         });
+                    } else if (res.status === 401) {
+                        alert('Session expired'); window.location.href = 'login.html';
                     } else {
                         alert('Failed to update order in DB');
                         fetchData(section); // Revert changes by reloading
@@ -393,7 +427,10 @@ document.getElementById('adminForm').addEventListener('submit', async (e) => {
     try {
         const response = await fetch('/api/admin/save', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify(payload)
         });
 
@@ -401,6 +438,8 @@ document.getElementById('adminForm').addEventListener('submit', async (e) => {
             alert('Saved successfully!');
             closeModal();
             fetchData(section); // Refresh list
+        } else if (response.status === 401) {
+            alert('Session expired'); window.location.href = 'login.html';
         } else {
             const err = await response.json();
             alert('Error: ' + err.error + (err.details ? '\nDetails: ' + err.details : ''));
@@ -416,11 +455,14 @@ async function deleteItem(section, id) {
     if (confirm('Are you sure you want to delete this item?')) {
         try {
             const response = await fetch(`/api/admin/delete/${section}/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: getAuthHeaders()
             });
 
             if (response.ok) {
                 fetchData(section);
+            } else if (response.status === 401) {
+                alert('Session expired'); window.location.href = 'login.html';
             } else {
                 alert('Error deleting item');
             }
