@@ -1044,11 +1044,6 @@ section {
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
     transition: all var(--transition-base);
-    /* Flex Layout for uniform height */
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 1rem;
 }
 
 .cert-card:hover {
@@ -1065,8 +1060,7 @@ section {
     justify-content: center;
     background: var(--gradient-primary);
     border-radius: var(--radius-md);
-    /* margin-bottom removed */
-    flex-shrink: 0;
+    margin-bottom: var(--spacing-sm);
 }
 
 .cert-icon i {
@@ -1077,32 +1071,28 @@ section {
 .cert-card h4 {
     font-size: 1.125rem;
     font-weight: 600;
-    /* margin-bottom removed */
-    flex-shrink: 0;
+    margin-bottom: 0.5rem;
 }
 
 .cert-issuer {
     color: var(--primary-color);
     font-weight: 500;
     font-size: 0.95rem;
-    /* margin-bottom removed */
-    flex-shrink: 0;
+    margin-bottom: 0.25rem;
 }
 
 .cert-date {
     color: var(--text-tertiary);
     font-size: 0.875rem;
-    /* margin-bottom removed */
-    flex-shrink: 0;
+    margin-bottom: 0.5rem;
 }
 
 .cert-description {
     color: var(--text-secondary);
     font-size: 0.8rem;
     line-height: 1.5;
-    /* padding-bottom removed */
-    flex-grow: 1;
-    /* Pushes button down slightly, but fills card */
+    margin-bottom: 0.75rem;
+    padding-bottom: 3rem;
 }
 
 /* ===================================
