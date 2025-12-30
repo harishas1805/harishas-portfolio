@@ -40,10 +40,14 @@ async function deploy() {
         await db.query(`ALTER TABLE certifications ADD COLUMN IF NOT EXISTS verify_link VARCHAR(500)`);
 
         // Project Home Page Image
-        await db.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_image_path VARCHAR(500)`);
+        await db.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_image_path TEXT`); // Ensure it exists
+        await db.query(`ALTER TABLE projects ALTER COLUMN project_image_path TYPE TEXT`); // Upgrade to TEXT for Base64
 
         // Migration: Add icon_class to skills if missing
         await db.query(`ALTER TABLE skills ADD COLUMN IF NOT EXISTS icon_class VARCHAR(50) DEFAULT 'fas fa-code'`);
+
+        // Upgrade Certificate Image Path to TEXT for Base64 support
+        await db.query(`ALTER TABLE certifications ALTER COLUMN certificate_image_path TYPE TEXT`);
 
         // ==========================================
         // FORCE UPDATE SKILLS (User Requirement)

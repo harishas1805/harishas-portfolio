@@ -17,17 +17,8 @@ app.use(express.static(path.join(__dirname))); // Serve current folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploads folder
 
 // Configure Multer
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/')
-    },
-    filename: function (req, file, cb) {
-        // Sanitize filename to remove special chars
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, 'cert-' + uniqueSuffix + ext)
-    }
-});
+// Configure Multer (Memory Storage for Base64 conversion)
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage: storage });
 
@@ -323,8 +314,15 @@ app.post('/api/admin/upload', upload.single('file'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
-    // Return the path relative to the server root
-    res.json({ filePath: '/uploads/' + req.file.filename });
+
+    // Convert buffer to Base64
+    const b64 = Buffer.from(req.file.buffer).toString('base64');
+    const mimeType = req.file.mimetype; // e.g., image/png
+    const dataURI = `data:${mimeType};base64,${b64}`;
+
+    // Return the Base64 Data URI as the "filePath"
+    // The frontend/database will treat it as a string URL, but it's actually the image data.
+    res.json({ filePath: dataURI });
 });
 
 app.listen(PORT, () => {
