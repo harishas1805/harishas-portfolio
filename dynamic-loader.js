@@ -190,8 +190,13 @@ async function loadInternships() {
                 ? intern.technologies.split(',').map(t => t.trim())
                 : [];
 
+            const hasPopup = intern.certificate_link && intern.certificate_link.trim() !== '';
+            const cursorStyle = hasPopup ? 'cursor: pointer;' : '';
+            const clickAttr = hasPopup ? `onclick="openCertModal('${intern.certificate_link}')"` : '';
+
             return `
-            <div class="internship-card" data-aos="fade-up" data-aos-delay="${index * 100}">
+            <div class="internship-card" data-aos="fade-up" data-aos-delay="${index * 100}" 
+                 style="${cursorStyle}" ${clickAttr}>
                 <div class="internship-icon">
                     <i class="${intern.icon_class || 'fas fa-briefcase'}"></i>
                 </div>
@@ -242,8 +247,14 @@ async function loadCertifications() {
         const container = document.querySelector('.certifications-grid');
         if (!container || !certs.length) return;
 
-        container.innerHTML = certs.map((cert, index) => `
-            <div class="cert-card" data-certificate-image="${cert.certificate_image_path}">
+        container.innerHTML = certs.map((cert, index) => {
+            const hasPopup = cert.certificate_image_path && cert.certificate_visible !== false;
+            const cursorStyle = hasPopup ? 'cursor: pointer;' : '';
+            const clickAttr = hasPopup ? `onclick="openCertModal('${cert.certificate_image_path}')"` : '';
+
+            return `
+            <div class="cert-card" data-certificate-image="${cert.certificate_image_path}"
+                 style="${cursorStyle}" ${clickAttr}>
                 <div class="cert-icon">
                     <i class="${cert.icon_class || 'fas fa-certificate'}"></i>
                 </div>
@@ -261,7 +272,8 @@ async function loadCertifications() {
                     </span>`}
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     } catch (e) { console.error('Error loading certifications', e); }
 }
 
@@ -273,8 +285,14 @@ async function loadAchievements() {
         const container = document.querySelector('.achievements-grid');
         if (!container || !achievements.length) return;
 
-        container.innerHTML = achievements.map((item, index) => `
-            <div class="achievement-card" data-aos="zoom-in" data-aos-delay="${index * 100}">
+        container.innerHTML = achievements.map((item, index) => {
+            const hasPopup = item.certificate_link && item.certificate_visible !== false;
+            const cursorStyle = hasPopup ? 'cursor: pointer;' : '';
+            const clickAttr = hasPopup ? `onclick="openCertModal('${item.certificate_link}')"` : '';
+
+            return `
+            <div class="achievement-card" data-aos="zoom-in" data-aos-delay="${index * 100}"
+                 style="${cursorStyle}" ${clickAttr}>
                 <div class="achievement-icon">
                     <i class="${item.icon_class || 'fas fa-trophy'}"></i>
                 </div>
@@ -303,6 +321,7 @@ async function loadAchievements() {
                     </a>` : ''}
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     } catch (e) { console.error('Error loading achievements', e); }
 }
