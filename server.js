@@ -182,7 +182,8 @@ app.get('/api/stats', async (req, res) => {
 // Middleware for Admin Security
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const { OAuth2Client } = require('google-auth-library');
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+// Use Environment Variable or fallback to the known ID provided by user
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '625155726760-dbnai59p0g94ugq43hi7n94v6nj4g874.apps.googleusercontent.com';
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const allowedEmails = [
