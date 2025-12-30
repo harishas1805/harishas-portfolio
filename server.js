@@ -128,13 +128,13 @@ app.post('/api/contact', async (req, res) => {
 
                 const mailOptions = {
                     from: process.env.EMAIL_USER,
-                    to: 'ushawin2020@gmail.com', // User requested email
+                    to: 'ushawin2020@gmail.com, anandhunharish@gmail.com', // Updated to include both recipients
                     subject: `Portfolio Contact: ${subject}`,
                     text: `You have received a new message from your portfolio website.\n\nFrom: ${name} (${email})\nSubject: ${subject}\n\nMessage:\n${message}`
                 };
 
                 await transporter.sendMail(mailOptions);
-                console.log('📧 Email notification sent to ushawin2020@gmail.com');
+                console.log('📧 Email notification sent to recipients');
             } else {
                 console.log('⚠️ Email credentials missing in .env. Skipping email notification.');
             }
@@ -228,7 +228,7 @@ app.post('/api/auth/google', async (req, res) => {
         console.log(`Google Auth Attempt: ${email}`);
 
         if (allowedEmails.includes(email)) {
-            res.json({ success: true, token: ADMIN_PASSWORD });
+            res.json({ success: true, token: ADMIN_PASSWORD, userEmail: email });
         } else {
             res.status(403).json({ success: false, error: 'Access Denied: Email not authorized' });
         }

@@ -15,7 +15,15 @@ function getAuthHeaders() {
 // Logout Function
 function logout() {
     localStorage.removeItem('adminKey');
+    localStorage.removeItem('adminEmail');
     window.location.href = 'login.html';
+}
+
+// Display Admin Email
+const adminEmail = localStorage.getItem('adminEmail');
+if (adminEmail) {
+    const display = document.getElementById('adminEmailDisplay');
+    if (display) display.innerText = adminEmail;
 }
 
 // State
